@@ -3,10 +3,14 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import 'dotenv/config';
+import Route from './routes/index.js';
 
 const app = express();
 app.use(cors());  // Enable CORS for all routes
 app.use(express.json());
+
+// All routes
+app.use('/api/v1',Route);
 
 const port = process.env.PORT || 8000;
 app.listen(8000, (err) => {

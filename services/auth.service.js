@@ -1,5 +1,6 @@
-import User from "../entities/User"
+import User from "../entities/User.js"
 import bcrypt from 'bcrypt';
+import JWT from 'jsonwebtoken';
 
 
 // A function to check if an email exists in your database
@@ -18,13 +19,18 @@ export default class AuthService {
 
         // hash the password
         const saltRound = 10;
-        const hashedPassword = await bcrypt.hash(password,saltRound);
-        
+        const hashedPassword = await bcrypt.hash(password, saltRound);
+
         // Proceed with user registration since email is unique and validation passed
         const user = await User.create({
-            name, 
+            name,
             email,
             password: hashedPassword
         })
+
+
+        return {
+            user: { name: user.name, email: user.email}
+        }
     }
 }
