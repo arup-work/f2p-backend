@@ -10,8 +10,10 @@ export default class AuthController {
                 user: registerDetails.user
             })
         } catch (error) {
-            res.status(500).json({ message: 'Server error', error: err.message });
-
+            if (error.message = "Email is already taken") {
+                return res.status(400).json({ statusCode: 400, message: error.message });
+            }
+            res.status(500).json({ message: 'Server error', error: error.message });
         }
     }
 }
