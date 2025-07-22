@@ -7,13 +7,32 @@ export default class AuthController {
             const registerDetails = await AuthService.register(name, email, password);
             return res.status(200).json({
                 message: "Congratulations your Registration is successful",
-                user: registerDetails.user
+                user: registerDetails.user,
+                statusCode: 200,
             })
         } catch (error) {
             if (error.message = "Email is already taken") {
                 return res.status(400).json({ statusCode: 400, message: error.message });
             }
             res.status(500).json({ message: 'Server error', error: error.message });
+        }
+    }
+
+    static async login(req, res, next) {
+        try {
+            const { email, password } = req.body;
+            const loginDetails = await AuthService.login(email, password);
+            return res.status(200).json({
+                message: "Login successfully",
+                user: loginDetails.user,
+                token: loginDetails.token,
+                statusCode: 200,
+            })
+        } catch (error) {
+            if (error.message = "Invalid credential") {
+                return res.status(400).json({ statusCode: 400, message: error.message });
+            }
+            res.status(500).json({ statusCode: 500, message: 'Server error', error: error.message });
         }
     }
 }

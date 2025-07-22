@@ -1,6 +1,6 @@
 import express from 'express';
 import { validationMiddleware } from '../middlewares/validation.js';
-import { registerSchema } from '../zod.js';
+import { loginSchema, registerSchema } from '../zod.js';
 import AuthController from '../controllers/auth.controller.js';
 const authRoute = express.Router();
 
@@ -9,6 +9,12 @@ authRoute.post(
     '/register',
     [validationMiddleware(registerSchema)],
     AuthController.register
+)
+// Login
+authRoute.post(
+    '/login',
+    [validationMiddleware(loginSchema)],
+    AuthController.login
 )
 
 export default authRoute;
