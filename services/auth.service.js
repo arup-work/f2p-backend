@@ -1,12 +1,19 @@
 import User from "../entities/User.js"
 import bcrypt from 'bcrypt';
 import JWT from 'jsonwebtoken';
+import crypto from 'crypto';
+import sendEmail from "../utils/mailer.js";
 
 
 // A function to check if an email exists in your database
 const emailExists = async (email) => {
     const user = await User.findOne({ email });
     return !!user;
+}
+
+// Get user details 
+const userDetails = async(email) => {
+    return await User.findOne({ email });
 }
 
 export default class AuthService {
@@ -57,6 +64,37 @@ export default class AuthService {
             token,
             user: { name: user.name, email: user.email, id: user.id }
         }
+
+    }
+
+    static async forgetPassword(email) {
+        // Check if the email is already in use
+        const user = await userDetails(email);
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        // Generate a reset token
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        const resetTokenHash = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+        // Set token and expiry on user
+        user.resetPasswordToken = resetTokenHash;
+        user.resetPasswordExpires = Date.now() + 360000; //1hr
+        await user.save();
+
+        // Send email with the reset token
+        const resetURL = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+        const context = { resetURL, name: user.name };
+        await sendEmail({
+            email,
+            subject: 'Password Reset',
+            template: 'resetPasswordTemplate.ejs',
+            context
+        });
+
+        return true;
+
 
     }
 }
