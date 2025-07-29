@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import JWT from 'jsonwebtoken';
 import crypto from 'crypto';
 import sendEmail from "../utils/mailer.js";
+import emailQueue from "../utils/emailQueue.js";
 
 
 // A function to check if an email exists in your database
@@ -86,7 +87,7 @@ export default class AuthService {
         // Send email with the reset token
         const resetURL = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
         const context = { resetURL, name: user.name };
-        await sendEmail({
+        await emailQueue.add({
             email,
             subject: 'Password Reset',
             template: 'resetPasswordTemplate.ejs',
