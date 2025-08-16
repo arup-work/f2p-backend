@@ -63,7 +63,7 @@ export default class AuthService {
 
         return {
             token,
-            user: { name: user.name, email: user.email, id: user.id }
+            user: { name: user.name, email: user.email }
         }
 
     }
